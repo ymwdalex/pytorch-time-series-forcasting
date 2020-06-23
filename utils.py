@@ -98,10 +98,12 @@ def vis(dataloader_vis, model, len_encode, len_decode, device):
     idx = np.random.randint(len(dataloader_vis.dataset))
     print('Visualize time series [{}]'.format(idx))
     
-    decode_norm = dataloader_vis.dataset[idx][1].view(len_decode).numpy()
+    decode_norm = dataloader_vis.dataset[idx][1].view(len_decode)
+    decode_norm = to_numpy(decode_norm)
     pred_norm = pred[idx]
 
-    encode_norm = dataloader_vis.dataset[idx][0].view(len_encode).numpy()
+    encode_norm = dataloader_vis.dataset[idx][0].view(len_encode)
+    encode_norm = to_numpy(encode_norm)
     
     array_nan_encode = np.empty(len_encode)
     array_nan_encode[:] = np.nan
