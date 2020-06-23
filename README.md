@@ -1,8 +1,12 @@
-PyTorch Time Series Forecasting
+# PyTorch Time Series Forecasting
 
-Contribution
-- PyTorch implementation on popular NN time series forecasting solutions
+## Examples
+- M5 forecasting: `./examples/2-M5-forecasting.ipynb`
+- web traffice forecasting: TODO
+
+## Contributions of this repository
+- PyTorch implementation on popular neural network time series forecasting solutions
 - beginner friendly: comments with tensor dimensions
 
-Reference
+## Reference
 - 

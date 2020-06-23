@@ -1,5 +1,8 @@
 import torch
 from torch import nn
+import numpy as np
+import pandas as pd
+from predict import predict
 
 
 def init_weights(m):
@@ -86,3 +89,32 @@ class EarlyStopping:
             print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ...')
         torch.save(model.state_dict(), 'cnn.pt')
         self.val_loss_min = val_loss
+
+
+def vis(dataloader_vis, model, len_encode, len_decode, device):
+    pred, pred_orig = predict(model, dataloader_vis, len_encode, len_decode, device)  
+    print('pred shape', pred.shape)
+    
+    idx = np.random.randint(len(dataloader_vis.dataset))
+    print('Visualize time series [{}]'.format(idx))
+    
+    decode_norm = dataloader_vis.dataset[idx][1].view(len_decode).numpy()
+    pred_norm = pred[idx]
+
+    encode_norm = dataloader_vis.dataset[idx][0].view(len_encode).numpy()
+    
+    array_nan_encode = np.empty(len_encode)
+    array_nan_encode[:] = np.nan
+    array_nan_decode = np.empty(len_decode)
+    array_nan_decode[:] = np.nan
+    
+    encode_array = np.concatenate([encode_norm, array_nan_decode])
+    decode_array = np.concatenate([array_nan_encode, decode_norm])
+    pred_array = np.concatenate([array_nan_encode, pred_norm])
+
+    df = pd.DataFrame({'encode': encode_array,
+                       'pred': pred_array, 
+                       'decode': decode_array})
+    df.plot()
+
+    return pred_norm, decode_norm

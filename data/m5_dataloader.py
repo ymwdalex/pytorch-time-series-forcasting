@@ -8,11 +8,12 @@ import torch
 from torch.utils.data import Dataset
 
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 # global variables
-LEN_ALL_TS = 1970
-LEN_DECODE = 28
+M5_LEN_ALL_TS = 1970
+M5_LEN_ENCODE = 365
+M5_LEN_DECODE = 28
 
 
 def read_data(input_dir):
@@ -88,7 +89,7 @@ def process_calendar(calendar):
     # transpose the dataframe
     # - row: categorical features
     # - columns: d1 - d1969
-    days_range = range(1, LEN_ALL_TS)
+    days_range = range(1, M5_LEN_ALL_TS)
     time_series_columns = [f'd_{i}' for i in days_range]
     calendar_df_t = pd.DataFrame(calendar[calendar_select_cols].values.T,
                                  index=calendar_select_cols,
@@ -228,7 +229,7 @@ def get_encode_decode_data(encode_start,
     if not is_pred:
         ts_decode = sales_train[col_decode].values
     else:
-        ts_decode = np.zeros((len(ts_encode), LEN_DECODE))
+        ts_decode = np.zeros((len(ts_encode), M5_LEN_DECODE))
 
     return ts_encode, ts_decode, ts_xdaysago_encode, ts_xdaysago_decode, feat_encode, feat_decode
 
