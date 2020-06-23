@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from utils import to_numpy
+import utils
 
 
 def predict(model, dataloader, len_encode, len_decode, device):
@@ -39,7 +39,7 @@ def predict(model, dataloader, len_encode, len_decode, device):
             output = output.squeeze().permute(1, 0)
 
             # append the prediction batch by batch
-            pred[start_index:end_index, :] += to_numpy(output)
+            pred[start_index:end_index, :] += utils.to_numpy(output)
 
             # mean size: [batch_size, 1, 1] --> [batch_size, 1]
             std = std.squeeze(dim=2)
@@ -49,7 +49,7 @@ def predict(model, dataloader, len_encode, len_decode, device):
 
             # # only mean
             # output_inverse = output + mean
-            pred_orig[start_index:end_index, :] += to_numpy(output_inverse)
+            pred_orig[start_index:end_index, :] += utils.to_numpy(output_inverse)
 
     torch.backends.cudnn.deterministic = currently_deterministic
 
