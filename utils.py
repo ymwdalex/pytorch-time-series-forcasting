@@ -66,7 +66,7 @@ class EarlyStopping:
         self.val_loss_min = np.Inf
         self.delta = delta
 
-    def __call__(self, val_loss, model,  epoch, lr):
+    def __call__(self, val_loss, model, epoch, lr):
 
         score = -val_loss
 
