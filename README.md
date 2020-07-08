@@ -4,12 +4,14 @@
 - PyTorch implementation on popular neural network time series forecasting solutions
 - beginner friendly: comments with tensor dimensions
 
-## Algorithm
+## Algorithms
 - Seq2Seq
 - WaveNet
 
 ## Examples
 - seq2seq: `./examples/M5-forecasting-seq2seq.ipynb`
+![seq2seq diagram](examples/fig/seq2seq_diagram.png "seq2seq diagram")
+
 - WaveNet: `./examples/M5-forecasting-wavenet.ipynb`
 
 ## Reference
