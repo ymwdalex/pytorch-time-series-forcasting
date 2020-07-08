@@ -359,8 +359,11 @@ class WaveNetTS(nn.Module):
 
         # output size: [batch_size, 1, decode_len]
         output = self.wavenet(forward_input)
+        
+        # change size to [decode_len, batch_size, 1] to match target tensor when compute loss
+        output = output.permute(2, 0, 1)
 
-        return output.squeeze(1)
+        return output
 
     def generate(
         self,
