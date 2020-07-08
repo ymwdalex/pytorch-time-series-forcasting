@@ -2,12 +2,28 @@ import torch
 from torch import nn
 
 
-def train(model, dataloader, optimizer, scheduler, criterion, clip, forch_teaching_rate=0.5):
+def train(
+    model, dataloader, optimizer, scheduler, criterion, clip, forch_teaching_rate=0.5
+):
     model.train()
 
     epoch_loss = 0
 
-    for batch_idx, (src, trg, _, _, _, src_xdaysago, trg_xdaysago, cat_encode, cat_decode, fixed_encode) in enumerate(dataloader):
+    for (
+        batch_idx,
+        (
+            src,
+            trg,
+            _,
+            _,
+            _,
+            src_xdaysago,
+            trg_xdaysago,
+            cat_encode,
+            cat_decode,
+            fixed_encode,
+        ),
+    ) in enumerate(dataloader):
 
         optimizer.zero_grad()
 
@@ -24,8 +40,17 @@ def train(model, dataloader, optimizer, scheduler, criterion, clip, forch_teachi
         cat_encode = cat_encode.permute(1, 0, 2)
         cat_decode = cat_decode.permute(1, 0, 2)
 
-        # output dim: [len_decode, batch_size, 1]        
-        output = model(src, trg, src_xdaysago, trg_xdaysago, cat_encode, cat_decode, fixed_encode, forch_teaching_rate)
+        # output dim: [len_decode, batch_size, 1]
+        output = model(
+            src,
+            trg,
+            src_xdaysago,
+            trg_xdaysago,
+            cat_encode,
+            cat_decode,
+            fixed_encode,
+            forch_teaching_rate,
+        )
 
         loss = criterion(output, trg)
 
@@ -50,7 +75,21 @@ def evaluate(model, dataloader, criterion):
 
     with torch.no_grad():
 
-        for batch_idx, (src, trg, trg_true, mean, std, src_xdaysago, trg_xdaysago, cat_encode, cat_decode, fixed_encode) in enumerate(dataloader):
+        for (
+            batch_idx,
+            (
+                src,
+                trg,
+                trg_true,
+                mean,
+                std,
+                src_xdaysago,
+                trg_xdaysago,
+                cat_encode,
+                cat_decode,
+                fixed_encode,
+            ),
+        ) in enumerate(dataloader):
 
             # src dim: [batch_size, len_ts, 1] --> [len_encode, batch_size, 1]
             # trg dim: [batch_size, len_ts, 1] --> [len_decode, batch_size, 1]
@@ -68,7 +107,16 @@ def evaluate(model, dataloader, criterion):
 
             # output dim: [len_decode, batch_size, 1]
             # must turn off teacher forcing
-            output = model(src, trg, src_xdaysago, trg_xdaysago, cat_encode, cat_decode, fixed_encode,  0)
+            output = model(
+                src,
+                trg,
+                src_xdaysago,
+                trg_xdaysago,
+                cat_encode,
+                cat_decode,
+                fixed_encode,
+                0,
+            )
 
             loss = criterion(output, trg)
             epoch_loss += loss.item()

@@ -17,7 +17,21 @@ def predict(model, dataloader, len_encode, len_decode, device):
     model.eval()
 
     with torch.no_grad():
-        for i, (src, trg, _, mean, std, src_xdaysago, trg_xdaysago, cat_encode, cat_decode, fixed_encode) in enumerate(dataloader):
+        for (
+            i,
+            (
+                src,
+                trg,
+                _,
+                mean,
+                std,
+                src_xdaysago,
+                trg_xdaysago,
+                cat_encode,
+                cat_decode,
+                fixed_encode,
+            ),
+        ) in enumerate(dataloader):
             start_index = i * batch_sz
             end_index = min(start_index + batch_sz, n_obs)
 
@@ -35,7 +49,16 @@ def predict(model, dataloader, len_encode, len_decode, device):
             cat_decode = cat_decode.permute(1, 0, 2)
 
             # turn off teacher forcing
-            output = model(src, trg, src_xdaysago, trg_xdaysago, cat_encode, cat_decode, fixed_encode, 0)
+            output = model(
+                src,
+                trg,
+                src_xdaysago,
+                trg_xdaysago,
+                cat_encode,
+                cat_decode,
+                fixed_encode,
+                0,
+            )
             output = output.squeeze().permute(1, 0)
 
             # append the prediction batch by batch

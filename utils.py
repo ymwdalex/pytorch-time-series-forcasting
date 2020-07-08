@@ -8,10 +8,10 @@ from predict import predict
 def init_weights(m):
     for name, param in m.named_parameters():
         if param.data.dim() > 1:
-            print(f'{name} with size {param.data.shape}: orthogonal_')
+            print(f"{name} with size {param.data.shape}: orthogonal_")
             nn.init.orthogonal_(param.data)
         else:
-            print(f'{name} with size {param.data.shape}: uniform_')
+            print(f"{name} with size {param.data.shape}: uniform_")
             nn.init.uniform_(param.data, -0.05, 0.05)
 
 
@@ -27,9 +27,10 @@ def epoch_time(start_time, end_time):
 
 
 class RMSELoss(nn.Module):
-    '''
+    """
     Use a nn class for RMSE loss
-    '''
+    """
+
     def __init__(self):
         super().__init__()
         self.mse = nn.MSELoss()
@@ -48,6 +49,7 @@ def to_numpy(x):
 
 class EarlyStopping:
     """Early stops the training if validation loss doesn't improve after a given patience."""
+
     def __init__(self, patience=7, verbose=False, delta=0):
         """
         Args:
@@ -75,48 +77,52 @@ class EarlyStopping:
             self.save_checkpoint(val_loss, model, epoch)
         elif score < self.best_score + self.delta:
             self.counter += 1
-            print(f'EarlyStopping counter: {self.counter} out of {self.patience} in epoch {epoch} lr {lr:.6f}; \n\t\tLoss {val_loss:.6f}; Best score {self.best_score:.6f}')
+            print(
+                f"EarlyStopping counter: {self.counter} out of {self.patience} in epoch {epoch} lr {lr:.6f}; \n\t\tLoss {val_loss:.6f}; Best score {self.best_score:.6f}"
+            )
             if self.counter >= self.patience:
                 self.early_stop = True
         else:
             self.best_score = score
-            self.save_checkpoint(val_loss, model,  epoch)
+            self.save_checkpoint(val_loss, model, epoch)
             self.counter = 0
 
     def save_checkpoint(self, val_loss, model, epoch):
-        '''Saves model when validation loss decrease.'''
+        """Saves model when validation loss decrease."""
         if self.verbose:
-            print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ...')
-        torch.save(model.state_dict(), 'cnn.pt')
+            print(
+                f"Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ..."
+            )
+        torch.save(model.state_dict(), "cnn.pt")
         self.val_loss_min = val_loss
 
 
 def vis(dataloader_vis, model, len_encode, len_decode, device):
-    pred, pred_orig = predict(model, dataloader_vis, len_encode, len_decode, device)  
-    print('pred shape', pred.shape)
-    
+    pred, pred_orig = predict(model, dataloader_vis, len_encode, len_decode, device)
+    print("pred shape", pred.shape)
+
     idx = np.random.randint(len(dataloader_vis.dataset))
-    print('Visualize time series [{}]'.format(idx))
-    
+    print("Visualize time series [{}]".format(idx))
+
     decode_norm = dataloader_vis.dataset[idx][1].view(len_decode)
     decode_norm = to_numpy(decode_norm)
     pred_norm = pred[idx]
 
     encode_norm = dataloader_vis.dataset[idx][0].view(len_encode)
     encode_norm = to_numpy(encode_norm)
-    
+
     array_nan_encode = np.empty(len_encode)
     array_nan_encode[:] = np.nan
     array_nan_decode = np.empty(len_decode)
     array_nan_decode[:] = np.nan
-    
+
     encode_array = np.concatenate([encode_norm, array_nan_decode])
     decode_array = np.concatenate([array_nan_encode, decode_norm])
     pred_array = np.concatenate([array_nan_encode, pred_norm])
 
-    df = pd.DataFrame({'encode': encode_array,
-                       'pred': pred_array, 
-                       'decode': decode_array})
+    df = pd.DataFrame(
+        {"encode": encode_array, "pred": pred_array, "decode": decode_array}
+    )
     df.plot()
 
     return pred_norm, decode_norm
